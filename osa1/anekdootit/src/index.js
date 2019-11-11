@@ -1,44 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 
-const App = () => {
-  //   const [selected, setSelected] = useState(anecdotes[0]);
-  const [selected, setSelected] = useState(anecdotes[0]);
-
-  const [arrValue, setArr] = useState(arr);
+const App = props => {
+  const [selected, setSelected] = useState(props.anecdotes[0]);
+  const [voteValues, setVoteValues] = useState(voteArray);
+  const [mostVotes, setMostVotes] = useState(0);
+  const [mostVotesAnecdoteValue, setMostVoteAnectode] = useState(0);
 
   const nextAnecdote = () => {
-    let random = Math.floor(Math.random() * anecdotes.length);
-
-    setSelected(anecdotes[random]);
+    let random = Math.floor(Math.random() * props.anecdotes.length);
+    setSelected(props.anecdotes[random]);
   };
 
-  const voteAnecdote = selected => {
-    arr[anecdotes.indexOf(selected)] += 1;
+  useEffect(() => {
+    mostVotesAnecdote();
+  });
 
-    setArr(arr[anecdotes.indexOf(selected)]);
-    // console.log("taulukko :", arr);
-    // console.log("arvo: ", arr[anecdotes.indexOf(selected)]);
+  const mostVotesAnecdote = () => {
+    let highest = Math.max(...voteValues);
+    setMostVotes(highest);
+    setMostVoteAnectode(props.anecdotes[voteValues.indexOf(mostVotes)]);
+    console.log("Vote values: ", voteValues);
+    console.log("Highest: ", highest);
   };
 
-  const anectodeWithMostVotes = () => {
-    return anecdotes[selected[Math.max(arrValue)];
+  const voteAnecdote = () => {
+    const copy = { ...voteValues };
+    copy[props.anecdotes.indexOf(selected)] += 1;
+    const newCopy = Object.values(copy);
+    setVoteValues(newCopy);
   };
 
   return (
     <>
       <h1>Anecdote of the day</h1>
-      {selected} has {arr[anecdotes.indexOf(selected)]}
+      {selected} has {voteValues[anecdotes.indexOf(selected)]} votes
       <br />
-      <button onClick={() => voteAnecdote(selected)}>vote</button>
-      <button onClick={nextAnecdote}>next anectode</button>
+      <button onClick={() => voteAnecdote()}>vote</button>
+      <button onClick={() => nextAnecdote()}>next anectode</button>
       <h1>Anecdote with most votes</h1>
-      {anectodeWithMostVotes()}
+      {mostVotesAnecdoteValue} has {mostVotes}
     </>
   );
 };
-const arr = Array.apply(null, new Array(6)).map(Number.prototype.valueOf, 0);
-console.log(arr);
+const voteArray = Array.apply(null, new Array(6)).map(
+  Number.prototype.valueOf,
+  0
+);
 
 const anecdotes = [
   "If it hurts, do it more often",

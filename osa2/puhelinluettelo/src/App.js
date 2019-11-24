@@ -3,14 +3,14 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import axios from "axios";
+import noteService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then(response => {
-      console.log(response.data);
-      setPersons(response.data);
+    noteService.getAll().then(initialPersons => {
+      setPersons(initialPersons);
     });
   }, []);
 
@@ -28,9 +28,11 @@ const App = () => {
     };
 
     if (!persons.some(name => name.name === phoneNumberObject.name)) {
-      setPersons(persons.concat(phoneNumberObject));
-      setNewName("");
-      setNewNumber("");
+      noteService.create(phoneNumberObject).then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+      });
     } else {
       alert(`${newName} is already added to phonebook.`);
     }
